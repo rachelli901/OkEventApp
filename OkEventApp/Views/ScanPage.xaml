@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
+             x:Class="OkEventApp.Views.ScanPage"
+             Title="扫码签到核销">
+
+    <Grid>
+        <!-- 1. 扫码取景视图。全平台共用；权限状态在 OnAppearing 里查，授权弹窗由下面的按钮触发 -->
+        <ContentView x:Name="ScannerContainer">
+            <Grid>
+                <zxing:CameraBarcodeReaderView Loaded="CameraReader_Loaded"
+                                               BarcodesDetected="CameraReader_BarcodesDetected"
+                                               IsDetecting="True" />
+                <!-- 取景框：文字压在相机画面上，这里固定用高对比的蓝色描边 -->
+                <Border WidthRequest="250"
+                        HeightRequest="250"
+                        Stroke="{AppThemeBinding Light={StaticResource LightAccentBlue}, Dark={StaticResource DarkAccentBlue}}"
+                        StrokeThickness="3"
+                        BackgroundColor="Transparent"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center" />
+            </Grid>
+        </ContentView>
+
+        <!-- 2. 底部提示文字 -->
+        <Label Text="将二维码放入框内即可自动扫描" 
+               TextColor="White" 
+               FontSize="14" 
+               HorizontalOptions="Center" 
+               VerticalOptions="Center" 
+               Margin="0,320,0,0" />
+
+        <!-- 3. 相机权限未授权时的重试入口，默认隐藏，由 code-behind 控制显隐 -->
+        <Button x:Name="RequestPermissionButton"
+                Text="授予相机权限"
+                IsVisible="False"
+                Clicked="OnRequestPermissionClicked"
+                BackgroundColor="{AppThemeBinding Light={StaticResource LightAccentBlue}, Dark={StaticResource DarkAccentBlue}}"
+                TextColor="{AppThemeBinding Light={StaticResource LightOnAccentText}, Dark={StaticResource DarkOnAccentText}}"
+                CornerRadius="8"
+                Margin="0,0,0,40"
+                HorizontalOptions="Center" />
+    </Grid>
+</ContentPage>

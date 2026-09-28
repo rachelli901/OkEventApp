@@ -1,0 +1,42 @@
+name: XAML 资源键校验
+
+# 校验 XAML 资源字典的「键定义 / 键引用」是否一一对应。
+#
+# 背景：MAUI 的 XamlC 与 SourceGen 都不校验 StaticResource 的 key 是否存在。
+# 键名写错时编译期是 0 错误 / 0 警告，直到运行时解析页面才抛 XamlParseException
+# —— 症状是「页面直接打不开」。本项目已踩过一次，见技术文档 §9.5。
+# 所以这一步必须独立于 dotnet build 存在：build 通过不代表资源键正确。
+#
+# 脚本逻辑与本地手工命令等价，见 scripts/check-xaml-resource-keys.sh。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'OkEventApp/Views/**'
+      - 'OkEventApp/Resources/Styles/**'
+      - 'scripts/check-xaml-resource-keys.sh'
+      - '.github/workflows/xaml-resource-keys.yml'
+  pull_request:
+    paths:
+      - 'OkEventApp/Views/**'
+      - 'OkEventApp/Resources/Styles/**'
+      - 'scripts/check-xaml-resource-keys.sh'
+      - '.github/workflows/xaml-resource-keys.yml'
+  # 允许在 GitHub 页面上手动触发，改完脚本想立刻验一次时用
+  workflow_dispatch:
+
+jobs:
+  resource-keys:
+    name: 资源键差集校验
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 运行资源键双向差集校验
+        run: bash scripts/check-xaml-resource-keys.sh
+
+      # 说明：当前 CI 只覆盖「编译期拦不住的那一类」问题。
+      # 后续若要加 dotnet build / test job，参考技术文档 §10 第二阶段，
+      # 注意 Windows TFM 与 MAUI workload 的安装步骤另需一行 dotnet workload install。

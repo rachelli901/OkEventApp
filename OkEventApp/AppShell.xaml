@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="OkEventApp.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:OkEventApp"
+    xmlns:views="clr-namespace:OkEventApp.Views"
+    Title="OkEventApp">
+
+    <!--
+      初始页（日程列表）由 ContentTemplate 创建。
+
+      MainPage 的构造函数依赖 MainViewModel，只能由 DI 容器解析，
+      这与 EventDetailPage / ScanPage 走 Shell 路由时同样从容器取实例是同一条路径 ——
+      全工程只有 DI 一种页面创建方式。
+
+      这里刻意不写 Route="MainPage"：该路由此前从未 RegisterRoute 实现，
+      一旦有人 GoToAsync("MainPage") 会抛「找不到路由」，属于会误导人的无效配置。
+      Shell 的返回栈由 Shell 自身维护（返回、GoToAsync("..")），不依赖这条路由。
+    -->
+    <ShellContent Title="日程"
+                  ContentTemplate="{DataTemplate views:MainPage}" />
+
+</Shell>

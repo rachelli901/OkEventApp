@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:OkEventApp.ViewModels"
+             xmlns:models="clr-namespace:OkEventApp.Models"
+             x:Class="OkEventApp.Views.MainPage"
+             x:DataType="vm:MainViewModel"
+             Title="会议日程大看台">
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- 顶部搜索框与扫码按钮区域 -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="10,5">
+            <SearchBar Grid.Column="0"
+                       Placeholder="搜索议程、讲师、地点..."
+                       Text="{Binding SearchText, Mode=TwoWay}" />
+
+            <Button Grid.Column="1"
+                    Text="📷 扫码核销"
+                    Command="{Binding GoToScanCommand}"
+                    Margin="5,0,0,0"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource LightAccentBlue}, Dark={StaticResource DarkAccentBlue}}"
+                    TextColor="{AppThemeBinding Light={StaticResource LightOnAccentText}, Dark={StaticResource DarkOnAccentText}}"
+                    CornerRadius="8"
+                    FontAttributes="Bold" />
+        </Grid>
+
+        <!-- 下拉刷新与列表容器 -->
+        <RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding LoadEventsCommand}">
+
+            <CollectionView x:Name="EventsCollectionView"
+                            ItemsSource="{Binding Events}"
+                            SelectionMode="Single"
+                            SelectionChangedCommand="{Binding GoToDetailCommand}"
+                            SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
+                <CollectionView.ItemTemplate>
+                    <!-- 模板内重新声明数据类型，切换回 EventItem 作用域 -->
+                    <DataTemplate x:DataType="models:EventItem">
+                        <Border Margin="12,6" Padding="15" StrokeShape="RoundRectangle 10" Stroke="{AppThemeBinding Light={StaticResource LightDividerColor}, Dark={StaticResource DarkDividerColor}}">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <!-- 左侧信息 -->
+                                <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                    <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
+                                    <HorizontalStackLayout Spacing="12">
+                                        <Label Text="{Binding Speaker, StringFormat='讲师: {0}'}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
+                                        <Label Text="{Binding Location, StringFormat='地点: {0}'}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+
+                                <!-- 右侧：分类标签 + 签到状态（绑定模型自身 INPC，扫码核销返回后就地刷新） -->
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="6">
+                                    <Border Padding="8,4" BackgroundColor="{AppThemeBinding Light={StaticResource LightBadgeBackground}, Dark={StaticResource DarkBadgeBackground}}" StrokeShape="RoundRectangle 5">
+                                        <Label Text="{Binding Category}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource LightAccentBlue}, Dark={StaticResource DarkAccentBlue}}" FontAttributes="Bold" />
+                                    </Border>
+                                    <Label Text="{Binding CheckInStatus}" FontSize="11" HorizontalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

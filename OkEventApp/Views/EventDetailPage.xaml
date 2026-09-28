@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:OkEventApp.ViewModels"
+             x:Class="OkEventApp.Views.EventDetailPage"
+             x:DataType="vm:EventDetailViewModel"
+             Title="议程详情">
+
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="15">
+            <!-- 标题 -->
+            <Label Text="{Binding Item.Title}" FontSize="22" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource LightTextPrimary}, Dark={StaticResource DarkTextPrimary}}" />
+
+            <!-- 讲师与地点 -->
+            <HorizontalStackLayout Spacing="15">
+                <Label Text="{Binding Item.Speaker, StringFormat='主讲人：{0}'}" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
+                <Label Text="{Binding Item.Location, StringFormat='地点：{0}'}" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" />
+            </HorizontalStackLayout>
+
+            <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource LightDividerColor}, Dark={StaticResource DarkDividerColor}}" Margin="0,10" />
+
+            <!-- 专属签到二维码区域 -->
+            <Border StrokeShape="RoundRectangle 10" BackgroundColor="{AppThemeBinding Light={StaticResource LightSurfaceBackground}, Dark={StaticResource DarkSurfaceBackground}}" Padding="15" HorizontalOptions="Center">
+                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                    <Label Text="电子入场凭证 / 扫码签到" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}" HorizontalOptions="Center" />
+                    <Image Source="{Binding QrCodeImage}" WidthRequest="160" HeightRequest="160" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- 签到状态：绑定模型上的 CheckInStatus，签到后文案自动从「未签到」变为「已签到」 -->
+            <Label Text="{Binding Item.CheckInStatus}"
+                   FontSize="14"
+                   TextColor="{AppThemeBinding Light={StaticResource LightTextSecondary}, Dark={StaticResource DarkTextSecondary}}"
+                   HorizontalOptions="Center" />
+
+            <!-- 按钮。CanCheckIn 由模型的 INPC 驱动，签到后自动置灰并改文案 -->
+            <Button Text="{Binding CheckInButtonText}"
+                    Command="{Binding CheckInCommand}"
+                    IsEnabled="{Binding CanCheckIn}"
+                    Margin="0,20,0,0"
+                    HeightRequest="48"
+                    CornerRadius="8"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource LightAccentBlue}, Dark={StaticResource DarkAccentBlue}}"
+                    TextColor="{AppThemeBinding Light={StaticResource LightOnAccentText}, Dark={StaticResource DarkOnAccentText}}"
+                    FontAttributes="Bold" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
